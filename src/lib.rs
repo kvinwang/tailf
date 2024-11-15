@@ -7,6 +7,7 @@ use tokio::process::{Child, Command};
 pub struct Tailer {
     process: Option<Child>,
     reader: BufReader<tokio::process::ChildStdout>,
+    max_chunk_size: usize,
 }
 
 impl Drop for Tailer {
@@ -26,7 +27,7 @@ impl Tailer {
     pub async fn next(&mut self) -> io::Result<Option<Vec<u8>>> {
         let mut line = Vec::new();
         match (&mut self.reader)
-            .take(1024 * 8)
+            .take(self.max_chunk_size)
             .read_until(b'\n', &mut line)
             .await
         {
@@ -70,5 +71,6 @@ pub fn tailf(filename: &str, num_lines: Option<usize>) -> io::Result<Tailer> {
     Ok(Tailer {
         process: Some(child),
         reader,
+        max_chunk_size: 1024 * 8,
     })
 }
