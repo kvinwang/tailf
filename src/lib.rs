@@ -1,4 +1,5 @@
 use std::io;
+use std::path::Path;
 use std::process::Stdio;
 use tokio::io::{AsyncBufReadExt, AsyncReadExt, BufReader};
 use tokio::process::{Child, Command};
@@ -7,7 +8,7 @@ use tokio::process::{Child, Command};
 pub struct Tailer {
     process: Option<Child>,
     reader: BufReader<tokio::process::ChildStdout>,
-    max_chunk_size: usize,
+    max_chunk_size: u64,
 }
 
 impl Drop for Tailer {
@@ -44,7 +45,7 @@ impl Tailer {
 ///
 /// * `filename` - The path to the file to tail
 /// * `num_lines` - The number of lines to read from the end of the file
-pub fn tailf(filename: &str, num_lines: Option<usize>) -> io::Result<Tailer> {
+pub fn tailf(filename: impl AsRef<Path>, num_lines: Option<usize>) -> io::Result<Tailer> {
     let mut cmd = Command::new("tail");
 
     // Add -f flag to follow the file
@@ -55,7 +56,7 @@ pub fn tailf(filename: &str, num_lines: Option<usize>) -> io::Result<Tailer> {
         cmd.arg("-n").arg(n.to_string());
     }
 
-    cmd.arg(filename);
+    cmd.arg(filename.as_ref());
 
     // Configure stdio
     cmd.stdout(Stdio::piped());
