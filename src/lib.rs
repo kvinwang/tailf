@@ -52,8 +52,9 @@ pub fn tailf(filename: impl AsRef<Path>, num_lines: Option<usize>) -> io::Result
     cmd.arg("-f");
 
     // If num_lines is provided, add -n flag
-    if let Some(n) = num_lines {
-        cmd.arg("-n").arg(n.to_string());
+    match num_lines {
+        Some(n) => cmd.arg("-n").arg(n.to_string()),
+        None => cmd.args(&["-n", "+0"]),
     }
 
     cmd.arg(filename.as_ref());
