@@ -1,0 +1,12 @@
+[package]
+name = "tailf"
+version = "0.1.0"
+edition = "2021"
+description = "A async `tail -f` for files"
+authors = ["Kevin Wang <wy721@qq.com>"]
+license = "MIT"
+repository = "https://github.com/kvinwang/tailf"
+keywords = ["tail", "utility", "async"]
+
+[dependencies]
+tokio = { version = "1.0", features = ["process", "io-util", "macros", "rt-multi-thread"] }
